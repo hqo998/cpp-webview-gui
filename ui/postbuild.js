@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import fs from 'fs';
-import path from 'path';
+import fs from "fs";
+import path from "path";
 
 if (process.argv.length !== 4) {
-  console.error('Usage: node generateHtmlHeader.js <input.html> <output.h>');
+  console.error("Usage: node generateHtmlHeader.js <input.html> <output.h>");
   process.exit(1);
 }
 
@@ -16,25 +16,36 @@ if (!fs.existsSync(inputPath)) {
 }
 
 // Read HTML
-let html = fs.readFileSync(inputPath, 'utf-8');
+let html = fs.readFileSync(inputPath, "utf-8");
 
 // Remove whitespace
 html = html
-  .replace(/\s+/g, ' ')      // collapse consecutive whitespace
-  .replace(/>\s+</g, '><')   // remove space between tags
+  .replace(/\s+/g, " ") // collapse consecutive whitespace
+  .replace(/>\s+</g, "><") // remove space between tags
   .trim();
 
 // Escape backslashes and double quotes
-html = html.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, "\\n\"\n\"");
+html = html
+  .replace(/\\/g, "\\\\")
+  .replace(/"/g, '\\"')
+  .replace(/\n/g, '\\n"\n"');
 
 // Build header content
-const header = `#pragma once
+let header = `#pragma once
 // Auto-generated from ${path.basename(inputPath)}
 // Do not edit manually.
 
-constexpr const char INDEX_HTML[] =
-"${html}";
-`;
+constexpr const char INDEX_HTML[] =`;
+
+let htmlParts = [];
+for (let i = 0; i < html.length; i += 300) {
+  let part = `"${html.slice(i, i + 300)}"`;
+  htmlParts.push(part);
+}
+
+let quotedHtml = htmlParts.join("\n");
+
+header = header.concat(`${quotedHtml};`);
 
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, header);
