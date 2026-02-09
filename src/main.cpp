@@ -5,20 +5,20 @@
 
 using json = nlohmann::json;
 
-#ifdef _WIN32
-int WINAPI WinMain(HINSTANCE /*hInst*/, HINSTANCE /*hPrevInst*/,
-                   LPSTR /*lpCmdLine*/, int /*nCmdShow*/) {
-#else
+// #ifdef _WIN32
+// int WINAPI WinMain(HINSTANCE /*hInst*/, HINSTANCE /*hPrevInst*/,
+//                    LPSTR /*lpCmdLine*/, int /*nCmdShow*/) {
+// #else
 int main() {
-    #endif
+    // #endif
     try {
         webview::webview main_window(false, nullptr);
         main_window.set_title("Prompt Workbench");
         main_window.set_size(1280, 720, WEBVIEW_HINT_NONE);
 
-        main_window.bind("ping", [&](const std::string& args_str) -> std::string { 
+        main_window.bind("ping", [&](const std::string& args_str) -> std::string {
             json args = json::parse(args_str);
-            
+
             std::cout << "Ping from UI: " << args[0] << std::endl;
 
             json result = {{"code", 200}};

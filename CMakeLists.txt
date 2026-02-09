@@ -23,7 +23,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(json)
 
-add_executable(app WIN32)
+add_executable(app)
 
 target_sources(app PRIVATE src/main.cpp ui/dist/index_html.h)
 target_include_directories(app PRIVATE ui/dist)
