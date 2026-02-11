@@ -18,34 +18,23 @@ if (!fs.existsSync(inputPath)) {
 // Read HTML
 let html = fs.readFileSync(inputPath, "utf-8");
 
-// Remove whitespace
+// Optional: Clean up whitespace for a smaller binary
 html = html
-  .replace(/\s+/g, " ") // collapse consecutive whitespace
-  .replace(/>\s+</g, "><") // remove space between tags
+  .replace(/\s+/g, " ")
+  .replace(/>\s+</g, "><")
   .trim();
 
-// Escape backslashes and double quotes
-html = html
-  .replace(/\\/g, "\\\\")
-  .replace(/"/g, '\\"')
-  .replace(/\n/g, '\\n"\n"');
-
-// Build header content
-let header = `#pragma once
+// Build header content using C++ Raw String Literal
+// We use "DELIMITER" to ensure that even if your HTML/JS
+// contains )", it won't accidentally close the string.
+const header = `#pragma once
 // Auto-generated from ${path.basename(inputPath)}
 // Do not edit manually.
 
-constexpr const char INDEX_HTML[] =`;
-
-let htmlParts = [];
-for (let i = 0; i < html.length; i += 300) {
-  let part = `"${html.slice(i, i + 300)}"`;
-  htmlParts.push(part);
-}
-
-let quotedHtml = htmlParts.join("\n");
-
-header = header.concat(`${quotedHtml};`);
+constexpr const char INDEX_HTML[] = R"raw(
+${html}
+)raw";
+`;
 
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, header);
