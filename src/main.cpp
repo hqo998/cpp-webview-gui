@@ -1,7 +1,9 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include "webview/webview.h"
-#include "index_html.h"
+// #include "index_html.h"
+#include <fstream>
+#include <sstream>
 
 using json = nlohmann::json;
 
@@ -11,6 +13,16 @@ using json = nlohmann::json;
 // #else
 int main() {
     // #endif
+    std::ifstream inHTML{"ui/index.html"};
+
+    if (!inHTML) {
+        std::cerr << "Failed to open HTML \n";
+        return -1;
+    }
+
+    std::stringstream buffer;
+    buffer << inHTML.rdbuf();
+
     try {
         webview::webview main_window(false, nullptr);
         main_window.set_title("Prompt Workbench");
@@ -25,8 +37,9 @@ int main() {
             return result.dump();
         });
 
-        main_window.set_html(INDEX_HTML);
+        main_window.set_html(buffer.str());
         main_window.run();
+
     } catch (const webview::exception &e) {
         std::cerr << e.what() << '\n';
         return 1;
