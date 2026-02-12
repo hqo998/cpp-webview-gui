@@ -1,11 +1,21 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include "webview/webview.h"
-// #include "index_html.h"
+
 #include <fstream>
 #include <sstream>
+#include <chrono>
 
 using json = nlohmann::json;
+
+void printTickerVal(webview::webview& window)
+{
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+
+    window.dispatch([&window]() {
+        window.set_title("Booger");
+    });
+}
 
 // #ifdef _WIN32
 // int WINAPI WinMain(HINSTANCE /*hInst*/, HINSTANCE /*hPrevInst*/,
@@ -38,6 +48,11 @@ int main() {
         });
 
         main_window.set_html(buffer.str());
+
+        std::thread ticker(printTickerVal, std::ref(main_window));
+
+        ticker.detach();
+
         main_window.run();
 
     } catch (const webview::exception &e) {

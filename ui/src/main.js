@@ -13,6 +13,7 @@ function changeText(x) {
     console.log(countValue);
     countText.textContent = countValue;
     window.ping(countValue);
+    
 }
 
 // 3. Add an event listener (when should it happen?)
@@ -33,5 +34,5 @@ function updateticker()
     requestAnimationFrame(updateticker);
 }
 
-updateticker()
+updateticker();
 
